@@ -22,16 +22,28 @@ class ProductController extends Controller
 		if ($validator->fails()) {
             return response()->json(['status' => 0, 'errors' => $validator->errors()]);
         } else {
-			$data = $this->get_data();
+			$data = $this->get_data();			
+			
+			if($request->product_id) {
+				$product_id = $request->product_id;
 				
-			$product_id = $this->get_new_product_id();
-							
-			$data['products'][] = ['id' => $product_id, 'name' => $request->name, 'quantity' => $request->quantity, 'price' => $request->price, 'created_at' => date('Y-m-d H:i:s')];
+				foreach($data['products'] as $key => $product) {
+					if($product['id'] == $product_id) {
+						$data['products'][$key] = ['id' => $product['id'], 'name' => $request->name, 'quantity' => $request->quantity, 'price' => $request->price, 'created_at' => $product['created_at']];
+					}
+				}
+				
+				$message = 'Product updated successfully!';
+			} else {
+				$product_id = $this->get_new_product_id();
+				
+				$data['products'][] = ['id' => $product_id, 'name' => $request->name, 'quantity' => $request->quantity, 'price' => $request->price, 'created_at' => date('Y-m-d H:i:s')];
+				
+				$message = 'Product saved successfully!';
+			}
 			
 			$path = $this->get_file_path();
 			File::put($path, json_encode($data, JSON_PRETTY_PRINT));
-			
-			$message = 'Product saved successfully!';
 			
 			return response()->json(['status' => 1, 'message' => $message]);
 		}

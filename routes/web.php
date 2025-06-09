@@ -16,3 +16,5 @@ use App\Http\Controllers\ProductController;
 
 Route::get('/', [ProductController::class, 'index'])->name('products');
 Route::post('/products/store', [ProductController::class, 'store'])->name('products.store');
+
+Route::get('/get-lsiting', [ProductController::class, 'get_listing'])->name('get-lsiting');

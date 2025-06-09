@@ -43,5 +43,32 @@
 			</div>
 		</form>
 	</div>
+	
+	<hr>
+	
+	<div id="products_table_container">
+		
+	</div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+	get_table_data();	
+});
+
+function get_table_data() {
+	$.ajax({
+		url: "{{route('get-lsiting')}}",
+		data: {},
+		dataType: 'json',
+		success: function(response) {
+			console.log(response);
+			
+			$('#products_table_container').html(response.html);
+		}
+	});
+}
+</script>
 @endsection

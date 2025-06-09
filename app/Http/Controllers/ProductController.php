@@ -33,6 +33,15 @@ class ProductController extends Controller
 		return back()->with('success', 'Product saved successfully!');
 	}
 	
+	function get_listing() {
+		$data = $this->get_data();		
+		$products 	= isset($data['products']) ? collect($data['products'])->sortBy('created_at') : [];
+		
+		return response()->json([
+			'html' => view('listing', compact('products'))->render()
+		]);
+	}
+	
 	function get_file_path() {
 		$path = storage_path('app/public/products.json');
 

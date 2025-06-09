@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Validator;
 
 class ProductController extends Controller
 {
@@ -12,25 +13,28 @@ class ProductController extends Controller
 	}
 	
 	public function store(Request $request) {
-		$request->validate([
+		$validator = Validator::make($request->all(), [
             'name' 		=> 'required|string|max:255',
             'quantity' 	=> 'required|integer|min:0',
             'price' 	=> 'required|numeric|gt:0',
         ]);
 		
-		
-		$data = $this->get_data();
+		if ($validator->fails()) {
+            return response()->json(['status' => 0, 'errors' => $validator->errors()]);
+        } else {
+			$data = $this->get_data();
+				
+			$product_id = $this->get_new_product_id();
+							
+			$data['products'][] = ['id' => $product_id, 'name' => $request->name, 'quantity' => $request->quantity, 'price' => $request->price, 'created_at' => date('Y-m-d H:i:s')];
 			
-		$product_id = $this->get_new_product_id();
-						
-		$data['products'][] = ['id' => $product_id, 'name' => $request->name, 'quantity' => $request->quantity, 'price' => $request->price, 'created_at' => date('Y-m-d H:i:s')];
-		
-		$path = $this->get_file_path();
-		File::put($path, json_encode($data, JSON_PRETTY_PRINT));
-		
-		$message = 'Product saved successfully!';
-		
-		return back()->with('success', 'Product saved successfully!');
+			$path = $this->get_file_path();
+			File::put($path, json_encode($data, JSON_PRETTY_PRINT));
+			
+			$message = 'Product saved successfully!';
+			
+			return response()->json(['status' => 1, 'message' => $message]);
+		}
 	}
 	
 	function get_listing() {

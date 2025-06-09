@@ -1,3 +1,13 @@
 .txt-r {
 	text-align:right;
 }
+
+.d-none {
+	display:none;
+}
+
+.errors {
+	color:red;
+	display:flex;
+	flex-direction: column;
+}
